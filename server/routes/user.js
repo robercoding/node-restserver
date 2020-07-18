@@ -1,17 +1,19 @@
-const express = require('express')
+const express = require('express');
 
 const bcrypt = require('bcrypt');
-const _ = require('underscore')
+const _ = require('underscore');
 
 const app = express();
 
 const User = require('../models/user');
+const { verifyToken, verifyTokenAdminRole } = require('../middlewares/authentication');
+const jwt = require('jsonwebtoken');
 
 app.get('/', function(req, res) {
     res.json('Hello World')
 })
 
-app.get('/users/:id', function(req, res) {
+app.get('/users/:id', (req, res) => {
     let id = req.params.id;
 
     User.findById(id, (err, userDB) => {
@@ -23,12 +25,11 @@ app.get('/users/:id', function(req, res) {
             });
         }
 
-
         res.json(userDB)
-    });
-})
+    })
+});
 
-app.get('/users', function(req, res) {
+app.get('/users', verifyToken, (req, res) => {
 
     let from = req.query.from || 0;
 
@@ -48,17 +49,17 @@ app.get('/users', function(req, res) {
                 });
             }
 
-            User.countDocuments({ state: true }, (err, count) => {
+            User.countDocuments({}, (err, count) => {
                 res.json({
                     ok: true,
                     users: usersDB,
                     count
-                })
+                });
             })
         })
 });
 
-app.post('/users', function(req, res) {
+app.post('/users', [verifyToken, verifyTokenAdminRole], (req, res) => {
 
     let body = req.body;
 
@@ -69,7 +70,33 @@ app.post('/users', function(req, res) {
         role: body.role,
     })
 
-    user.save((err, userDB) => {
+    user.save((err, user) => {
+        if (err) {
+            return res.status(400).json({
+                ok: false,
+                err
+            });
+        }
+
+        let token = jwt.sign({
+            user: user
+        }, process.env.SEED, process.env.EXPIRE_TOKEN);
+
+        res.json({
+            ok: true,
+            user: user,
+            token
+        });
+    })
+});
+
+
+app.put('/users/:id', [verifyToken, verifyTokenAdminRole], (req, res) => {
+    let id = req.params.id;
+
+    let body = _.pick(req.body, ['name', 'email', 'img', 'role', 'state']);
+
+    User.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, userDB) => {
         if (err) {
             return res.status(400).json({
                 ok: false,
@@ -80,32 +107,11 @@ app.post('/users', function(req, res) {
         res.json({
             ok: true,
             user: userDB
-        })
-    });
-});
-
-
-app.put('/users/:id', function(req, res) {
-    let id = req.params.id;
-
-    let body = _.pick(req.body, ['name', 'email', 'img', 'role', 'state']);
-
-    User.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, userDB) => {
-        if (err) {
-            return res.status(400).json({
-                ok: false,
-                err
-            })
-        };
-
-        res.json({
-            ok: true,
-            user: userDB
         });
     })
-})
+});
 
-app.delete('/users/:id', function(req, res) {
+app.delete('/users/:id', [verifyToken, verifyTokenAdminRole], (req, res) => {
 
     let id = req.params.id;
 
@@ -150,11 +156,7 @@ app.delete('/users/:id', function(req, res) {
             user: modifiedUserState
         })
     })
-
-})
-
+});
 
 
-module.exports = {
-    app
-}
+module.exports = app;
