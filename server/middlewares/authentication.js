@@ -40,7 +40,7 @@ let verifyTokenAdminRole = (req, res, next) => {
         return res.json({
             ok: false,
             err: {
-                message: 'User is not admin'
+                message: 'User is not an admin'
             }
         });
     }
