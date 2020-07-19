@@ -84,7 +84,7 @@ app.post('/users', [verifyToken, verifyTokenAdminRole], (req, res) => {
 
         let token = jwt.sign({
             user: user
-        }, process.env.SEED, process.env.TOKEN_EXPIRE);
+        }, process.env.SEED, { expiresIn: process.env.TOKEN_EXPIRE });
 
         res.json({
             ok: true,
