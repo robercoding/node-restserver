@@ -10,6 +10,10 @@ let productSchema = new Schema({
         required: [true, 'Name is needed'],
         unique: true
     },
+    img: {
+        type: String,
+        required: false
+    },
     priceUnit: {
         type: Number,
         required: [true, 'The price unitary is needed']
