@@ -44,7 +44,7 @@ app.put('/upload/:type/:id', (req, res) => {
     let validExtensions = ['jpg', 'gif', 'png', 'jpeg'];
 
     let nameSplit = file.name.split('.');
-    let extension = nameSplit[nameSplit.length - 1]
+    let extension = nameSplit[nameSplit.length - 1];
 
 
     if (validExtensions.indexOf(extension) < 0) {
@@ -58,6 +58,8 @@ app.put('/upload/:type/:id', (req, res) => {
 
     //Remove blank spaces
     let fileName = `${ id }-${new Date().getMilliseconds()}.${extension}`.replace(/\s/g, "");
+
+    createFolders(type);
 
     file.mv(`uploads/${ type }/${ fileName }`, (err) => {
         if (err) {
@@ -152,6 +154,29 @@ function removeFile(fileName, type) {
 
     if (fs.existsSync(pathImg)) {
         fs.unlinkSync(pathImg);
+    }
+}
+
+function createFolders(type) {
+    try {
+        fs.mkdirSync(path.resolve(__dirname, `../../uploads`));
+    } catch (err) {
+        if (err.code !== 'EEXIST') {
+            return res.status(500).json({
+                ok: false,
+                error: err
+            });
+        }
+    }
+    try {
+        fs.mkdirSync(path.resolve(__dirname, `../../uploads/${type}`));
+    } catch (err) {
+        if (err.code !== 'EEXIST') {
+            return res.status(500).json({
+                ok: false,
+                error: err
+            });
+        }
     }
 }
 
