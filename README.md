@@ -7,7 +7,7 @@ I've built this project as a way to get out of my comfort zone and improve mysel
 
 [Postman documentation](https://documenter.getpostman.com/view/11964320/T1Djjz7Z?version=latest)
 
-[Production WebPage](https://robercoding-restserver-node.herokuapp.com) <i>It may take a few seconds to start the server</i>
+[Production WebPage](https://robercoding-restserver-nodejs.herokuapp.com) <i>It may take a few seconds to start the server</i>
 
 
 In order to be avaliable to access to the requests you'll have to login an account and get the token generated on the response. <i>(Token expires every 8760h)</i>
