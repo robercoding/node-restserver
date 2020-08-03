@@ -5,7 +5,7 @@ I've built this project as a way to get out of my comfort zone and improve mysel
 #### For a brief, you have the postman documentation where it shows all the requests that are avaliable and the production webpage:
 
 
-[Postman documentation](https://documenter.getpostman.com/view/11964320/T1Djjz7Z?version=latest#c0eb70a0-d455-436e-8eee-959ea063484e)
+[Postman documentation](https://documenter.getpostman.com/view/11964320/T1Djjz7Z?version=latest)
 
 [Production WebPage](https://robercoding-restserver-node.herokuapp.com) <i>It may take a few seconds to start the server</i>
 
